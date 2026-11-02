@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My AI Chatbot</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+.chat-container {
+    width: 100%;
+    max-width: 430px;
+    height: 650px;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+}
+
+.header {
+    background: #5b4bdb;
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h2 {
+    font-size: 21px;
+}
+
+.header p {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.clear-btn {
+    background: white;
+    color: #5b4bdb;
+    border: none;
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.chat-box {
+    flex: 1;
+    padding: 18px;
+    overflow-y: auto;
+    background: #f5f6fc;
+}
+
+.message {
+    max-width: 85%;
+    padding: 12px 15px;
+    margin-bottom: 13px;
+    border-radius: 15px;
+    line-height: 1.5;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.bot {
+    background: white;
+    color: #333;
+    border-bottom-left-radius: 3px;
+    align-self: flex-start;
+}
+
+.user {
+    background: #5b4bdb;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 3px;
+}
+
+.chat-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-area {
+    display: flex;
+    padding: 14px;
+    gap: 10px;
+    background: white;
+    border-top: 1px solid #eee;
+}
+
+.input-area input {
+    flex: 1;
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid #ddd;
+    border-radius: 25px;
+    outline: none;
+    font-size: 14px;
+}
+
+.input-area input:focus {
+    border-color: #5b4bdb;
+}
+
+.send-btn {
+    background: #5b4bdb;
+    color: white;
+    border: none;
+    padding: 0 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.send-btn:hover {
+    background: #4434bd;
+}
+
+.typing {
+    color: #777;
+    font-size: 13px;
+    margin-bottom: 12px;
+    font-style: italic;
+}
+
+@media(max-width: 480px) {
+    .chat-container {
+        height: 90vh;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="chat-container">
+
+    <div class="header">
+        <div>
+            <h2>🤖 My Chatbot</h2>
+            <p>● Online - Ready to help</p>
+        </div>
+
+        <button class="clear-btn" onclick="clearChat()">
+            Clear
+        </button>
+    </div>
+
+    <div class="chat-box" id="chatBox">
+        <div class="message bot">
+            Hello! 👋 Welcome to my chatbot.
+            <br><br>
+            How can I help you today?
+        </div>
+    </div>
+
+    <div class="input-area">
+        <input
+            type="text"
+            id="userInput"
+            placeholder="Type your message..."
+            autocomplete="off"
+        >
+
+        <button class="send-btn" onclick="sendMessage()">
+            Send
+        </button>
+    </div>
+
+</div>
+
+<script>
+
+const chatBox = document.getElementById("chatBox");
+const userInput = document.getElementById("userInput");
+
+function addMessage(message, sender) {
+    const div = document.createElement("div");
+
+    div.className = "message " + sender;
+    div.textContent = message;
+
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function getBotResponse(message) {
+
+    let text = message.toLowerCase().trim();
+
+    if (text.includes("hello") || text.includes("hi") || text.includes("hey")) {
+        return "Hello! 😊 How are you today?";
+    }
+
+    if (text.includes("your name") || text.includes("who are you")) {
+        return "I am your personal chatbot! 🤖";
+    }
+
+    if (text.includes("how are you")) {
+        return "I am doing great! Thanks for asking. 😊";
+    }
+
+    if (text.includes("your creator")) {
+        return "I was created using HTML, CSS and JavaScript.";
+    }
+
+    if (text.includes("time")) {
+        return "Current time is " + new Date().toLocaleTimeString();
+    }
+
+    if (text.includes("date")) {
+        return "Today's date is " + new Date().toLocaleDateString();
+    }
+
+    if (text.includes("thank")) {
+        return "You're most welcome! ❤️";
+    }
+
+    if (text.includes("help")) {
+        return "Sure! Tell me what you need help with.";
+    }
+
+    if (text.includes("bye")) {
+        return "Goodbye! Have a wonderful day. 👋";
+    }
+
+    if (text.includes("love")) {
+        return "That's so sweet! ❤️";
+    }
+
+    if (text.includes("joke")) {
+        return "Why did the computer go to the doctor? Because it had a virus! 😂";
+    }
+
+    if (text.includes("good morning")) {
+        return "Good morning! ☀️ Have a fantastic day!";
+    }
+
+    if (text.includes("good night")) {
+        return "Good night! Sweet dreams! 🌙";
+    }
+
+    return "Interesting question! 😊 I am a basic chatbot right now. Please try asking something else.";
+}
+
+function sendMessage() {
+
+    const message = userInput.value.trim();
+
+    if (message === "") {
+        return;
+    }
+
+    addMessage(message, "user");
+
+    userInput.value = "";
+
+    const typing = document.createElement("div");
+    typing.className = "typing";
+    typing.textContent = "Bot is typing...";
+
+    chatBox.appendChild(typing);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    setTimeout(function() {
+
+        typing.remove();
+
+        const reply = getBotResponse(message);
+
+        addMessage(reply, "bot");
+
+    }, 700);
+}
+
+function clearChat() {
+
+    chatBox.innerHTML = "";
+
+    addMessage(
+        "Hello! 👋 Chat cleared. How can I help you?",
+        "bot"
+    );
+}
+
+userInput.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+
+});
+
+</script>
+
+</body>
+</html>
