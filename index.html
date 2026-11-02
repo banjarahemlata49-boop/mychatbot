@@ -1,315 +1,432 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My AI Chatbot</title>
-
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 15px;
-}
-
-.chat-container {
-    width: 100%;
-    max-width: 430px;
-    height: 650px;
-    background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 10px 35px rgba(0,0,0,0.25);
-}
-
-.header {
-    background: #5b4bdb;
-    color: white;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.header h2 {
-    font-size: 21px;
-}
-
-.header p {
-    font-size: 12px;
-    margin-top: 5px;
-}
-
-.clear-btn {
-    background: white;
-    color: #5b4bdb;
-    border: none;
-    padding: 9px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-}
-
-.chat-box {
-    flex: 1;
-    padding: 18px;
-    overflow-y: auto;
-    background: #f5f6fc;
-}
-
-.message {
-    max-width: 85%;
-    padding: 12px 15px;
-    margin-bottom: 13px;
-    border-radius: 15px;
-    line-height: 1.5;
-    font-size: 14px;
-    overflow-wrap: anywhere;
-}
-
-.bot {
-    background: white;
-    color: #333;
-    border-bottom-left-radius: 3px;
-    align-self: flex-start;
-}
-
-.user {
-    background: #5b4bdb;
-    color: white;
-    margin-left: auto;
-    border-bottom-right-radius: 3px;
-}
-
-.chat-box {
-    display: flex;
-    flex-direction: column;
-}
-
-.input-area {
-    display: flex;
-    padding: 14px;
-    gap: 10px;
-    background: white;
-    border-top: 1px solid #eee;
-}
-
-.input-area input {
-    flex: 1;
-    min-width: 0;
-    padding: 13px;
-    border: 1px solid #ddd;
-    border-radius: 25px;
-    outline: none;
-    font-size: 14px;
-}
-
-.input-area input:focus {
-    border-color: #5b4bdb;
-}
-
-.send-btn {
-    background: #5b4bdb;
-    color: white;
-    border: none;
-    padding: 0 20px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 15px;
-}
-
-.send-btn:hover {
-    background: #4434bd;
-}
-
-.typing {
-    color: #777;
-    font-size: 13px;
-    margin-bottom: 12px;
-    font-style: italic;
-}
-
-@media(max-width: 480px) {
-    .chat-container {
-        height: 90vh;
-    }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101114" />
+  <title>Nova AI — Groq Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/styles/github-dark.min.css">
+  <style>
+    :root{color-scheme:dark;--bg:#101114;--panel:#17191e;--panel2:#1e2027;--line:#2b2e37;--muted:#9297a5;--text:#f1f2f5;--accent:#a78bfa;--accent2:#7c5ce7;--green:#6ee7b7}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;height:100vh;overflow:hidden}
+    button,input,textarea,select{font:inherit}button{cursor:pointer;color:inherit}
+    .app{height:100vh;display:grid;grid-template-columns:270px 1fr}
+    .sidebar{background:#141519;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:18px 14px;min-width:0}
+    .brand{display:flex;align-items:center;gap:11px;padding:5px 8px 22px;font:700 20px "Space Grotesk";letter-spacing:-.6px}
+    .brand-mark{width:34px;height:34px;border-radius:12px;background:linear-gradient(135deg,#c4b5fd,#7c3aed);display:grid;place-items:center;color:#171221;font-size:19px}
+    .new-chat{border:1px solid #454052;background:#211d2b;border-radius:11px;padding:12px 13px;text-align:left;font-weight:600;display:flex;gap:10px;align-items:center;transition:.2s}
+    .new-chat:hover,.icon-btn:hover,.side-action:hover{background:#292532}
+    .side-label{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:#777c89;font-weight:700;margin:25px 8px 10px}
+    .history{overflow:auto;flex:1}.history-item{display:flex;align-items:center;gap:8px;padding:10px;border-radius:9px;color:#b7bac4;font-size:13px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .history-item:hover,.history-item.active{background:#22242b;color:white}.history-item span{overflow:hidden;text-overflow:ellipsis}
+    .side-bottom{border-top:1px solid var(--line);padding-top:12px}.side-action{width:100%;background:transparent;border:0;border-radius:9px;padding:11px 9px;text-align:left;color:#b7bac4;display:flex;align-items:center;gap:10px;font-size:13px}
+    .main{display:flex;flex-direction:column;min-width:0;height:100vh;position:relative}
+    .topbar{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--line);background:rgba(16,17,20,.92)}
+    .model-wrap{display:flex;align-items:center;gap:10px}.model-select{background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--text);padding:9px 32px 9px 12px;max-width:250px}
+    .status{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:7px}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 9px #6ee7b766}
+    .top-actions{display:flex;gap:8px}.icon-btn{width:36px;height:36px;border:1px solid var(--line);border-radius:9px;background:var(--panel);display:grid;place-items:center;color:#c4c6ce}
+    .mobile-brand{display:none}
+    .chat-scroll{flex:1;overflow-y:auto;padding:34px 20px 20px;scroll-behavior:smooth}
+    .chat-inner{max-width:850px;margin:0 auto;width:100%}
+    .welcome{min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px}
+    .welcome-orb{width:66px;height:66px;border-radius:23px;background:linear-gradient(145deg,#c4b5fd,#7c3aed);display:grid;place-items:center;font-size:31px;color:#171221;box-shadow:0 12px 45px #8b5cf633;margin-bottom:22px}
+    h1{font:700 clamp(27px,4vw,38px) "Space Grotesk";letter-spacing:-1.4px;margin:0 0 10px}
+    .welcome p{color:var(--muted);max-width:510px;line-height:1.65;margin:0 0 28px}
+    .suggestions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:min(100%,570px)}
+    .suggestion{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:left;color:#d4d5dc;font-size:13px;line-height:1.45;transition:.2s}
+    .suggestion:hover{border-color:#8064cf;background:#211e2a}.suggestion b{display:block;color:#fff;margin-bottom:5px;font-size:13px}
+    .message{display:flex;gap:14px;margin:0 auto 27px;max-width:790px;align-items:flex-start}
+    .avatar{width:31px;height:31px;flex:0 0 31px;border-radius:11px;display:grid;place-items:center;font-size:14px;font-weight:700}
+    .avatar.user{background:#34313e;color:#ddd2ff}.avatar.assistant{background:linear-gradient(135deg,#c4b5fd,#8b5cf6);color:#171221}
+    .message-body{min-width:0;flex:1;padding-top:3px}.message-head{font-size:12px;color:#a5a8b3;font-weight:700;margin-bottom:8px}
+    .message-content{font-size:14px;line-height:1.75;color:#e2e3e8;overflow-wrap:anywhere}
+    .message-content p{margin:0 0 12px}.message-content p:last-child{margin-bottom:0}.message-content ul,.message-content ol{padding-left:22px}.message-content pre{background:#0c0d10;border:1px solid #30323a;border-radius:10px;padding:15px;overflow:auto;font-size:12px;line-height:1.6}.message-content code:not(pre code){background:#282a32;padding:2px 5px;border-radius:5px;font-size:.9em}.message-content blockquote{border-left:3px solid var(--accent);padding-left:13px;color:#b9bbc5;margin:12px 0}
+    .msg-tools{display:flex;gap:7px;margin-top:10px}.msg-tools button{border:0;background:transparent;color:#858a98;font-size:11px;padding:4px 7px;border-radius:5px}.msg-tools button:hover{background:#252730;color:white}
+    .typing{display:flex;gap:5px;padding:8px 0}.typing i{width:6px;height:6px;background:#aaa0c9;border-radius:50%;animation:bounce 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}
+    .composer-area{padding:12px 20px 18px;background:linear-gradient(transparent,var(--bg) 18%)}.composer-wrap{max-width:850px;margin:auto}
+    .composer{background:#1a1c22;border:1px solid #383b46;border-radius:16px;padding:12px 13px 10px;box-shadow:0 12px 35px #0003}
+    .composer:focus-within{border-color:#8064cf}.composer textarea{width:100%;resize:none;max-height:180px;min-height:30px;background:transparent;border:0;outline:0;color:var(--text);font-size:14px;line-height:1.5;padding:4px 3px}
+    .composer-bottom{display:flex;align-items:center;justify-content:space-between}.composer-hint{font-size:11px;color:#777d89}.send-btn{border:0;border-radius:9px;background:var(--accent);color:#171221;width:34px;height:34px;font-size:18px;font-weight:700}.send-btn:hover{background:#c4b5fd}.send-btn:disabled{opacity:.4;cursor:not-allowed}
+    .disclaimer{text-align:center;color:#686d79;font-size:10px;margin-top:10px}
+    .overlay{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.overlay.open{display:flex}
+    .modal{width:min(100%,490px);background:#191b21;border:1px solid #373a44;border-radius:17px;padding:22px;box-shadow:0 25px 90px #0009}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}.modal h2{font:600 20px "Space Grotesk";margin:0}.modal p{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 17px}
+    .field-label{font-size:12px;color:#c7c8d0;display:block;margin:13px 0 7px;font-weight:600}.field{width:100%;background:#101115;border:1px solid #393c46;border-radius:9px;padding:11px 12px;color:white;outline:0}.field:focus{border-color:#9275df}.key-row{display:flex;gap:7px}.key-row .field{flex:1;min-width:0}.small-btn{background:#292b34;border:1px solid #41444f;border-radius:8px;padding:0 11px;font-size:12px}.modal-actions{display:flex;justify-content:space-between;align-items:center;margin-top:19px;gap:10px}.primary{background:var(--accent);color:#171221;border:0;border-radius:9px;padding:10px 15px;font-weight:700}.secondary{background:#292b34;border:1px solid #41444f;border-radius:9px;padding:10px 13px;color:#ddd}.save-option{font-size:12px;color:#b8bbc5;display:flex;gap:8px;align-items:center}.save-option input{accent-color:#a78bfa}
+    .toast{position:fixed;bottom:95px;left:50%;transform:translateX(-50%);background:#282a32;border:1px solid #484b56;padding:10px 15px;border-radius:9px;font-size:12px;display:none;z-index:30}.toast.show{display:block}
+    @media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{display:none}.topbar{height:60px;padding:0 14px}.mobile-brand{display:flex;align-items:center;gap:8px;font:700 16px "Space Grotesk"}.mobile-brand .brand-mark{width:29px;height:29px;border-radius:9px;font-size:16px}.model-select{max-width:155px;padding:8px 22px 8px 8px;font-size:11px}.status{display:none}.chat-scroll{padding:22px 14px 15px}.composer-area{padding:8px 12px 13px}.suggestions{grid-template-columns:1fr}.welcome{min-height:55vh;padding:15px}.message{gap:10px;margin-bottom:23px}.avatar{width:28px;height:28px;flex-basis:28px}.message-content{font-size:13px}.top-actions .icon-btn{width:33px;height:33px}}
+    @media(max-width:390px){.model-select{max-width:128px}.topbar{gap:7px}.mobile-brand{font-size:14px}}
+  </style>
 </head>
-
 <body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">✳</div><span>Nova AI</span></div>
+    <button class="new-chat" id="newChat"><span>＋</span> New chat</button>
+    <div class="side-label">Recent chats</div>
+    <div class="history" id="historyList"></div>
+    <div class="side-bottom">
+      <button class="side-action" id="openSettings"><span>⚙</span> API & model settings</button>
+      <button class="side-action" id="clearHistory"><span>⌫</span> Clear chat history</button>
+      <div style="padding:12px 8px 2px;color:#676c78;font-size:10px">Powered by Groq · GitHub Pages ready</div>
+    </div>
+  </aside>
 
-<div class="chat-container">
+  <main class="main">
+    <header class="topbar">
+      <div class="mobile-brand"><div class="brand-mark">✳</div>Nova AI</div>
+      <div class="model-wrap">
+        <select class="model-select" id="modelSelect" aria-label="Choose AI model">
+          <optgroup label="GPT / OpenAI">
+            <option value="openai/gpt-oss-20b">GPT-OSS 20B</option>
+            <option value="openai/gpt-oss-120b">GPT-OSS 120B</option>
+          </optgroup>
+          <optgroup label="Meta Llama">
+            <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
+            <option value="llama-3.1-8b-instant">Llama 3.1 8B</option>
+          </optgroup>
+        </select>
+        <div class="status"><span class="dot"></span><span id="keyStatus">API key not set</span></div>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="settingsBtn" title="API settings" aria-label="API settings">⚙</button>
+        <button class="icon-btn" id="newChatTop" title="New chat" aria-label="New chat">＋</button>
+      </div>
+    </header>
 
-    <div class="header">
-        <div>
-            <h2>🤖 My Chatbot</h2>
-            <p>● Online - Ready to help</p>
+    <section class="chat-scroll" id="chatScroll">
+      <div class="chat-inner" id="chatContent">
+        <div class="welcome" id="welcome">
+          <div class="welcome-orb">✳</div>
+          <h1>What can I help with?</h1>
+          <p>Your AI workspace, powered by Groq. Choose GPT-OSS or Llama, add your API key, and start chatting.</p>
+          <div class="suggestions">
+            <button class="suggestion" data-prompt="Explain a complex topic in simple words."><b>✧ Learn something</b>Explain a complex topic in simple words</button>
+            <button class="suggestion" data-prompt="Give me 5 creative project ideas I can build this weekend."><b>⌘ Brainstorm ideas</b>Find inspiration for your next project</button>
+            <button class="suggestion" data-prompt="Write a clean, responsive HTML/CSS landing page for a modern app."><b>〈〉 Write code</b>Build something with code</button>
+            <button class="suggestion" data-prompt="Help me create a practical weekly plan with clear priorities."><b>▦ Make a plan</b>Organize tasks and priorities</button>
+          </div>
         </div>
+      </div>
+    </section>
 
-        <button class="clear-btn" onclick="clearChat()">
-            Clear
-        </button>
-    </div>
-
-    <div class="chat-box" id="chatBox">
-        <div class="message bot">
-            Hello! 👋 Welcome to my chatbot.
-            <br><br>
-            How can I help you today?
+    <div class="composer-area">
+      <div class="composer-wrap">
+        <div class="composer">
+          <textarea id="promptInput" rows="1" placeholder="Message Nova AI..." aria-label="Message"></textarea>
+          <div class="composer-bottom">
+            <span class="composer-hint">Enter to send · Shift + Enter for a new line</span>
+            <button class="send-btn" id="sendBtn" aria-label="Send message">↑</button>
+          </div>
         </div>
+        <div class="disclaimer">AI can make mistakes. Verify important information. Your API key is used directly in this browser.</div>
+      </div>
     </div>
-
-    <div class="input-area">
-        <input
-            type="text"
-            id="userInput"
-            placeholder="Type your message..."
-            autocomplete="off"
-        >
-
-        <button class="send-btn" onclick="sendMessage()">
-            Send
-        </button>
-    </div>
-
+  </main>
 </div>
 
+<div class="overlay" id="settingsOverlay">
+  <section class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal-head"><h2 id="settingsTitle">Connect your Groq API</h2><button class="icon-btn" id="closeSettings" aria-label="Close">✕</button></div>
+    <p>Paste your Groq API key below. It is sent directly from this browser to Groq and is never embedded in this website's source code.</p>
+    <label class="field-label" for="apiKey">Groq API key</label>
+    <div class="key-row"><input class="field" id="apiKey" type="password" placeholder="gsk_..." autocomplete="off"><button class="small-btn" id="toggleKey" type="button">Show</button></div>
+    <label class="field-label" for="settingsModel">Default model</label>
+    <select class="field" id="settingsModel">
+      <option value="openai/gpt-oss-20b">GPT-OSS 20B</option>
+      <option value="openai/gpt-oss-120b">GPT-OSS 120B</option>
+      <option value="llama-3.3-70b-versatile">Llama 3.3 70B</option>
+      <option value="llama-3.1-8b-instant">Llama 3.1 8B</option>
+    </select>
+    <label class="field-label">Key storage</label>
+    <label class="save-option"><input type="checkbox" id="saveKey"> Remember API key on this device (local storage)</label>
+    <div class="modal-actions"><button class="secondary" id="removeKey">Remove key</button><button class="primary" id="saveSettings">Save & start chatting</button></div>
+    <p style="margin:14px 0 0;font-size:11px">Get an API key at <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style="color:#c4b5fd">console.groq.com/keys</a>. Never share your key or commit it to GitHub.</p>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.6/purify.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.10.0/highlight.min.js"></script>
 <script>
+(() => {
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const API_URL = "https://api.groq.com/openai/v1/chat/completions";
+  const HISTORY_KEY = "nova_groq_chats_v1";
+  const SAVED_KEY_KEY = "nova_groq_api_key";
+  const MODEL_KEY = "nova_groq_model";
+  const DEFAULT_MODEL = "openai/gpt-oss-20b";
+  let apiKey = "";
+  let currentChatId = null;
+  let chats = [];
+  let messages = [];
+  let busy = false;
+  let abortController = null;
 
-const chatBox = document.getElementById("chatBox");
-const userInput = document.getElementById("userInput");
+  const modelNames = {
+    "openai/gpt-oss-20b":"GPT-OSS 20B",
+    "openai/gpt-oss-120b":"GPT-OSS 120B",
+    "llama-3.3-70b-versatile":"Llama 3.3 70B",
+    "llama-3.1-8b-instant":"Llama 3.1 8B"
+  };
 
-function addMessage(message, sender) {
-    const div = document.createElement("div");
-
-    div.className = "message " + sender;
-    div.textContent = message;
-
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function getBotResponse(message) {
-
-    let text = message.toLowerCase().trim();
-
-    if (text.includes("hello") || text.includes("hi") || text.includes("hey")) {
-        return "Hello! 😊 How are you today?";
+  function toast(message) {
+    const el = $("toast"); el.textContent = message; el.classList.add("show");
+    clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.remove("show"), 2600);
+  }
+  function selectedModel() { return $("modelSelect").value; }
+  function setKeyStatus() {
+    $("keyStatus").textContent = apiKey ? "API key connected" : "API key not set";
+    $("keyStatus").previousElementSibling.style.background = apiKey ? "var(--green)" : "#e7b66c";
+  }
+  function loadSettings() {
+    try { apiKey = sessionStorage.getItem("nova_groq_session_key") || localStorage.getItem(SAVED_KEY_KEY) || ""; } catch {}
+    const model = localStorage.getItem(MODEL_KEY) || DEFAULT_MODEL;
+    if (modelNames[model]) $("modelSelect").value = model;
+    $("settingsModel").value = $("modelSelect").value;
+    $("apiKey").value = apiKey;
+    $("saveKey").checked = !!localStorage.getItem(SAVED_KEY_KEY);
+    setKeyStatus();
+  }
+  function loadChats() {
+    try { chats = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]"); if (!Array.isArray(chats)) chats = []; } catch { chats = []; }
+    renderHistory();
+  }
+  function persistChats() {
+    try { localStorage.setItem(HISTORY_KEY, JSON.stringify(chats.slice(0,40))); } catch { toast("Could not save chat history in this browser."); }
+  }
+  function renderHistory() {
+    const list = $("historyList"); list.innerHTML = "";
+    chats.forEach(chat => {
+      const item = document.createElement("div");
+      item.className = "history-item" + (chat.id === currentChatId ? " active" : "");
+      item.innerHTML = '<span>▤</span><span></span>';
+      item.lastElementChild.textContent = chat.title || "New chat";
+      item.title = chat.title || "New chat";
+      item.addEventListener("click", () => openChat(chat.id));
+      list.appendChild(item);
+    });
+  }
+  function saveCurrentChat() {
+    if (!messages.length) return;
+    const title = (messages.find(m => m.role === "user")?.content || "New chat").replace(/\s+/g," ").slice(0, forty());
+    const found = chats.find(c => c.id === currentChatId);
+    if (found) { found.title = title; found.messages = messages; found.updatedAt = Date.now(); }
+    else {
+      currentChatId = String(Date.now()) + Math.random().toString(36).slice(2,7);
+      chats.unshift({id:currentChatId,title,messages,updatedAt:Date.now()});
     }
-
-    if (text.includes("your name") || text.includes("who are you")) {
-        return "I am your personal chatbot! 🤖";
+    chats.sort((a,b) => b.updatedAt - a.updatedAt);
+    persistChats(); renderHistory();
+  }
+  function forty(){ return 40; }
+  function openChat(id) {
+    const chat = chats.find(c => c.id === id); if (!chat) return;
+    currentChatId = id; messages = chat.messages.map(m => ({...m}));
+    renderMessages(); renderHistory();
+  }
+  function newChat() {
+    if (busy) { abortController?.abort(); }
+    currentChatId = null; messages = [];
+    $("chatContent").innerHTML = "";
+    $("chatContent").appendChild($("welcomeTemplate").content.cloneNode(true));
+    wireSuggestions();
+    renderHistory();
+    $("promptInput").focus();
+  }
+  function ensureWelcomeTemplate() {
+    const welcome = $("welcome");
+    if (welcome && !$("welcomeTemplate")) {
+      const template = document.createElement("template"); template.id = "welcomeTemplate";
+      template.content.appendChild(welcome.cloneNode(true));
+      document.body.appendChild(template);
     }
-
-    if (text.includes("how are you")) {
-        return "I am doing great! Thanks for asking. 😊";
+  }
+  function renderMessages() {
+    $("chatContent").innerHTML = "";
+    if (!messages.length) { newChat(); return; }
+    messages.forEach((msg, index) => appendMessage(msg, index));
+    scrollBottom();
+  }
+  function appendMessage(msg, index) {
+    const wrap = document.createElement("article"); wrap.className = "message";
+    const avatar = document.createElement("div"); avatar.className = "avatar " + (msg.role === "user" ? "user" : "assistant");
+    avatar.textContent = msg.role === "user" ? "Y" : "✳";
+    const body = document.createElement("div"); body.className = "message-body";
+    const head = document.createElement("div"); head.className = "message-head"; head.textContent = msg.role === "user" ? "You" : "Nova AI";
+    const content = document.createElement("div"); content.className = "message-content";
+    if (msg.role === "user") content.textContent = msg.content;
+    else content.innerHTML = safeMarkdown(msg.content || "");
+    body.append(head,content);
+    if (msg.role === "assistant" && msg.content) {
+      const tools = document.createElement("div"); tools.className = "msg-tools";
+      const copy = document.createElement("button"); copy.textContent = "Copy"; copy.addEventListener("click", () => copyText(msg.content));
+      tools.appendChild(copy); body.appendChild(tools);
     }
-
-    if (text.includes("your creator")) {
-        return "I was created using HTML, CSS and JavaScript.";
+    wrap.append(avatar,body); $("chatContent").appendChild(wrap);
+    content.querySelectorAll("pre code").forEach(el => { if (window.hljs) hljs.highlightElement(el); });
+    return content;
+  }
+  function safeMarkdown(text) {
+    if (!window.marked || !window.DOMPurify) return escapeHtml(text).replace(/\n/g,"<br>");
+    marked.setOptions({ breaks:true, gfm:true });
+    return DOMPurify.sanitize(marked.parse(text));
+  }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+  async function copyText(text) {
+    try { await navigator.clipboard.writeText(text); toast("Copied to clipboard"); }
+    catch { toast("Clipboard access unavailable"); }
+  }
+  function scrollBottom() { $("chatScroll").scrollTop = $("chatScroll").scrollHeight; }
+  function showTyping() {
+    const wrap = document.createElement("article"); wrap.className = "message"; wrap.id = "typingIndicator";
+    wrap.innerHTML = '<div class="avatar assistant">✳</div><div class="message-body"><div class="message-head">Nova AI</div><div class="typing"><i></i><i></i><i></i></div></div>';
+    $("chatContent").appendChild(wrap); scrollBottom();
+  }
+  function wireSuggestions() {
+    document.querySelectorAll(".suggestion").forEach(btn => btn.addEventListener("click", () => {
+      $("promptInput").value = btn.dataset.prompt || ""; autoResize(); sendMessage();
+    }));
+  }
+  function setBusy(value) {
+    busy = value; $("sendBtn").textContent = value ? "■" : "↑";
+    $("sendBtn").title = value ? "Stop generating" : "Send message";
+    $("sendBtn").disabled = false;
+  }
+  async function sendMessage() {
+    if (busy) { abortController?.abort(); return; }
+    const text = $("promptInput").value.trim(); if (!text) return;
+    if (!apiKey) { openSettings(); toast("Add your Groq API key to continue"); return; }
+    if (!currentChatId && messages.length === 0) $("chatContent").innerHTML = "";
+    messages.push({role:"user",content:text});
+    $("promptInput").value = ""; autoResize();
+    appendMessage(messages[messages.length-1], messages.length-1);
+    showTyping(); setBusy(true);
+    abortController = new AbortController();
+    let assistantText = "";
+    try {
+      const response = await fetch(API_URL, {
+        method:"POST",
+        headers:{"Content-Type":"application/json","Authorization":"Bearer " + apiKey},
+        body:JSON.stringify({
+          model:selectedModel(),
+          messages:messages,
+          temperature:0.7,
+          max_tokens:4096,
+          stream:true
+        }),
+        signal:abortController.signal
+      });
+      if (!response.ok) {
+        let detail = "";
+        try { const data = await response.json(); detail = data.error?.message || JSON.stringify(data); } catch {}
+        throw new Error(detail || `Groq API error (${response.status})`);
+      }
+      $("typingIndicator")?.remove();
+      const assistantMsg = {role:"assistant",content:""};
+      messages.push(assistantMsg);
+      const contentEl = appendMessage(assistantMsg, messages.length-1);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const {value,done} = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value,{stream:true});
+        const lines = buffer.split("\n"); buffer = lines.pop() || "";
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith("data:")) continue;
+          const data = trimmed.slice(5).trim();
+          if (data === "[DONE]") continue;
+          try {
+            const parsed = JSON.parse(data);
+            const delta = parsed.choices?.[0]?.delta?.content;
+            if (typeof delta === "string") {
+              assistantText += delta; assistantMsg.content = assistantText;
+              contentEl.innerHTML = safeMarkdown(assistantText);
+              contentEl.querySelectorAll("pre code").forEach(el => { if (window.hljs && !el.dataset.highlighted) hljs.highlightElement(el); });
+              scrollBottom();
+            }
+          } catch {}
+        }
+      }
+      if (!assistantText) { assistantText = "The model returned an empty response."; assistantMsg.content = assistantText; contentEl.textContent = assistantText; }
+      addCopyButton(contentEl.parentElement, assistantText);
+      saveCurrentChat();
+    } catch (error) {
+      $("typingIndicator")?.remove();
+      if (error.name === "AbortError") {
+        if (assistantText || messages.length) saveCurrentChat();
+        toast("Generation stopped");
+      } else {
+        const msg = error.message || "Something went wrong.";
+        const errorNode = document.createElement("div"); errorNode.className = "message";
+        errorNode.innerHTML = '<div class="avatar assistant">!</div><div class="message-body"><div class="message-head">Connection issue</div><div class="message-content"></div></div>';
+        errorNode.querySelector(".message-content").textContent = msg + " — Check your API key, model availability, network, and Groq account limits.";
+        $("chatContent").appendChild(errorNode);
+        messages.pop();
+        if (messages.length && messages[messages.length-1].role === "user") saveCurrentChat();
+        scrollBottom();
+      }
+    } finally {
+      setBusy(false); abortController = null; $("promptInput").focus();
     }
+  }
+  function addCopyButton(body, text) {
+    if (!body || body.querySelector(".msg-tools")) return;
+    const tools = document.createElement("div"); tools.className = "msg-tools";
+    const button = document.createElement("button"); button.textContent = "Copy";
+    button.addEventListener("click", () => copyText(text)); tools.appendChild(button); body.appendChild(tools);
+  }
+  function autoResize() {
+    const el = $("promptInput"); el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight,180) + "px";
+  }
+  function openSettings() {
+    $("apiKey").value = apiKey; $("settingsModel").value = selectedModel();
+    $("settingsOverlay").classList.add("open");
+  }
+  function closeSettings() { $("settingsOverlay").classList.remove("open"); }
+  function saveSettings() {
+    const key = $("apiKey").value.trim();
+    if (key && !key.startsWith("gsk_")) { toast("This doesn't look like a Groq API key (usually starts with gsk_)"); return; }
+    apiKey = key;
+    try {
+      sessionStorage.setItem("nova_groq_session_key", apiKey);
+      if ($("saveKey").checked && apiKey) localStorage.setItem(SAVED_KEY_KEY, apiKey);
+      else localStorage.removeItem(SAVED_KEY_KEY);
+      localStorage.setItem(MODEL_KEY, $("settingsModel").value);
+    } catch { toast("Browser storage is unavailable; key kept for this session only."); }
+    $("modelSelect").value = $("settingsModel").value;
+    setKeyStatus(); closeSettings(); toast(apiKey ? "Groq API key saved for this session" : "API key cleared");
+  }
+  function removeKey() {
+    apiKey = ""; $("apiKey").value = ""; $("saveKey").checked = false;
+    try { sessionStorage.removeItem("nova_groq_session_key"); localStorage.removeItem(SAVED_KEY_KEY); } catch {}
+    setKeyStatus(); toast("API key removed");
+  }
 
-    if (text.includes("time")) {
-        return "Current time is " + new Date().toLocaleTimeString();
-    }
-
-    if (text.includes("date")) {
-        return "Today's date is " + new Date().toLocaleDateString();
-    }
-
-    if (text.includes("thank")) {
-        return "You're most welcome! ❤️";
-    }
-
-    if (text.includes("help")) {
-        return "Sure! Tell me what you need help with.";
-    }
-
-    if (text.includes("bye")) {
-        return "Goodbye! Have a wonderful day. 👋";
-    }
-
-    if (text.includes("love")) {
-        return "That's so sweet! ❤️";
-    }
-
-    if (text.includes("joke")) {
-        return "Why did the computer go to the doctor? Because it had a virus! 😂";
-    }
-
-    if (text.includes("good morning")) {
-        return "Good morning! ☀️ Have a fantastic day!";
-    }
-
-    if (text.includes("good night")) {
-        return "Good night! Sweet dreams! 🌙";
-    }
-
-    return "Interesting question! 😊 I am a basic chatbot right now. Please try asking something else.";
-}
-
-function sendMessage() {
-
-    const message = userInput.value.trim();
-
-    if (message === "") {
-        return;
-    }
-
-    addMessage(message, "user");
-
-    userInput.value = "";
-
-    const typing = document.createElement("div");
-    typing.className = "typing";
-    typing.textContent = "Bot is typing...";
-
-    chatBox.appendChild(typing);
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    setTimeout(function() {
-
-        typing.remove();
-
-        const reply = getBotResponse(message);
-
-        addMessage(reply, "bot");
-
-    }, 700);
-}
-
-function clearChat() {
-
-    chatBox.innerHTML = "";
-
-    addMessage(
-        "Hello! 👋 Chat cleared. How can I help you?",
-        "bot"
-    );
-}
-
-userInput.addEventListener("keydown", function(event) {
-
-    if (event.key === "Enter") {
-        sendMessage();
-    }
-
-});
-
+  ensureWelcomeTemplate(); loadSettings(); loadChats(); wireSuggestions();
+  $("newChat").addEventListener("click",newChat);
+  $("newChatTop").addEventListener("click",newChat);
+  $("openSettings").addEventListener("click",openSettings);
+  $("settingsBtn").addEventListener("click",openSettings);
+  $("closeSettings").addEventListener("click",closeSettings);
+  $("settingsOverlay").addEventListener("click",e=>{if(e.target===$("settingsOverlay"))closeSettings();});
+  $("saveSettings").addEventListener("click",saveSettings);
+  $("removeKey").addEventListener("click",removeKey);
+  $("toggleKey").addEventListener("click",()=>{const el=$("apiKey");el.type=el.type==="password"?"text":"password";$("toggleKey").textContent=el.type==="password"?"Show":"Hide";});
+  $("modelSelect").addEventListener("change",()=>{ $("settingsModel").value=selectedModel(); try{localStorage.setItem(MODEL_KEY,selectedModel());}catch{} });
+  $("sendBtn").addEventListener("click",sendMessage);
+  $("promptInput").addEventListener("input",autoResize);
+  $("promptInput").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}});
+  $("clearHistory").addEventListener("click",()=>{if(!confirm("Delete all saved conversations from this browser?"))return;chats=[];persistChats();newChat();toast("Chat history cleared");});
+  $("apiKey").addEventListener("keydown",e=>{if(e.key==="Enter")saveSettings();});
+})();
 </script>
-
 </body>
 </html>
